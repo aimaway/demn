@@ -1,7 +1,6 @@
 import React from 'react';
-import { useAuth } from '../../../src/context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import { Building2, Users, Shield, TrendingUp, CheckCircle2, AlertTriangle } from 'lucide-react';
-import ValueEngineSection from '../../components/ValueEngineWidgets';
 
 export default function ClientAdminDashboardPage() {
   const { organization } = useAuth();
@@ -12,12 +11,9 @@ export default function ClientAdminDashboardPage() {
   return (
     <div className="p-4 lg:p-6 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white">Client Administration — Overview</h1>
-        <p className="text-slate-500 text-sm mt-1">Your posture, your team and the business value delivered this month — one page.</p>
+        <h1 className="text-2xl font-bold text-white">Client Administration</h1>
+        <p className="text-slate-500 text-sm mt-1">Manage your organization's users, services, and security posture</p>
       </div>
-
-      {/* Merged: former "Overview" + "Value & Loyalty" → single Executive Dashboard */}
-      <ValueEngineSection orgId={Number(organization.id) || undefined} />
 
       <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6">
         <div className="flex items-start gap-4">

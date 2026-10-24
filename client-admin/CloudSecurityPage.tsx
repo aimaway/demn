@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Cloud, AlertTriangle, CheckCircle, Shield, Server } from 'lucide-react';
-import { tryLiveFeed } from '../../hooks/useLiveFeed';
 
 interface CloudAlert {
   id: string;
@@ -23,9 +22,6 @@ export default function CloudSecurityPage() {
   useEffect(() => {
     const fetchAlerts = async () => {
       await new Promise(resolve => setTimeout(resolve, 500));
-      // REAL DATA: same structure, fed by the service's open-source engine
-      const live = await tryLiveFeed('cloud-security');
-      if (live) { setAlerts(live as any); setLoading(false); return; }
       setAlerts([
         { id: 'CLOUD-001', provider: 'AWS', service: 'S3', type: 'Public Bucket', severity: 'critical', resource: 'my-company-data', status: 'active', timestamp: '2027-01-15T09:00:00Z', ticketCreated: true },
         { id: 'CLOUD-002', provider: 'Azure', service: 'VM', type: 'Unpatched OS', severity: 'high', resource: 'web-server-01', status: 'investigating', timestamp: '2027-01-15T08:30:00Z', ticketCreated: false },

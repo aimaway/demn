@@ -1,6 +1,6 @@
 import React from 'react';
-import { useAuth } from '../../../src/context/AuthContext';
-import { serviceCatalog } from '../../../src/data/mockData';
+import { useAuth } from '../../context/AuthContext';
+import { serviceCatalog } from '../../data/mockData';
 import { CheckCircle2, XCircle } from 'lucide-react';
 
 export default function ClientEntitlementsPage() {

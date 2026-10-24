@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../../src/context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import { 
   Server, Network, Monitor, Printer, Wifi, Shield, 
   AlertTriangle, CheckCircle, XCircle, Activity,

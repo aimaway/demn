@@ -1,6 +1,6 @@
 import React from 'react';
-import { useAuth } from '../../../src/context/AuthContext';
-import { demoUsers } from '../../../src/data/mockData';
+import { useAuth } from '../../context/AuthContext';
+import { demoUsers } from '../../data/mockData';
 import { Users, Plus, CheckCircle2, XCircle } from 'lucide-react';
 
 export default function ClientUsersPage() {

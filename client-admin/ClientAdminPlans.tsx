@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from '../../../src/context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import { 
   CreditCard, CheckCircle, XCircle, MessageCircle, 
   Send, Bot, User, Crown, Zap, Shield, Star

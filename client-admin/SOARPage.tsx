@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Zap, Play, Pause, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
-import { tryLiveFeed } from '../../hooks/useLiveFeed';
 
 interface Playbook {
   id: string;
@@ -19,9 +18,6 @@ export default function SOARPage() {
   useEffect(() => {
     const fetchPlaybooks = async () => {
       await new Promise(resolve => setTimeout(resolve, 500));
-      // REAL DATA: same structure, fed by the service's open-source engine
-      const live = await tryLiveFeed('soar');
-      if (live) { setPlaybooks(live as any); setLoading(false); return; }
       setPlaybooks([
         { id: 'PB-001', name: 'Ransomware Response', description: 'Automated response to ransomware detection', status: 'active', executions: 145, lastRun: '2027-01-15T08:30:00Z', successRate: 98 },
         { id: 'PB-002', name: 'Phishing Investigation', description: 'Investigate and remediate phishing attempts', status: 'active', executions: 234, lastRun: '2027-01-15T09:15:00Z', successRate: 95 },

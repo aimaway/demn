@@ -36,20 +36,18 @@ export default function DeviceStatistics() {
         // In production: const response = await fetch('/api/devices');
         await new Promise(resolve => setTimeout(resolve, 500));
         
-        // Single source of truth: the coherent demo world (same 24 devices,
-        // same hostnames/IPs/status as Network page, Alerts, Tickets, PSA).
-        const { demoDevices } = await import('../../data/demoWorld');
-        const hash = (str: string, mod: number) => { let h = 0; for (const c of str) h = (h * 31 + c.charCodeAt(0)) % mod; return h; };
-        const mockDevices: Device[] = demoDevices.map((d, i) => ({
-          id: String(i + 1), hostname: d.hostname, ip: d.ip, type: (d.type === 'storage' ? 'server' : d.type) as Device['type'],
-          os: d.os, status: d.status === 'degraded' ? 'warning' : d.status,
-          cpu: d.status === 'offline' ? 0 : 15 + hash(d.hostname, 60),
-          memory: d.status === 'offline' ? 0 : 25 + hash(d.hostname + 'm', 55),
-          disk: d.status === 'offline' ? 0 : 20 + hash(d.hostname + 'd', 60),
-          uptime: d.status === 'offline' ? '0d 0h' : `${2 + hash(d.hostname, 90)}d ${hash(d.hostname + 'h', 23)}h`,
-          location: d.location, lastSeen: d.lastSeenMin === 0 ? 'just now' : `${d.lastSeenMin} min ago`,
-          alerts: d.alerts,
-        }));
+        const mockDevices: Device[] = [
+          { id: '1', hostname: 'server-web-01', ip: '10.0.10.10', type: 'server', os: 'Ubuntu 22.04', status: 'online', cpu: 45, memory: 68, disk: 52, uptime: '45d 12h', location: 'Datacenter', lastSeen: '2 min ago', alerts: 0 },
+          { id: '2', hostname: 'server-db-01', ip: '10.0.10.11', type: 'server', os: 'Ubuntu 22.04', status: 'warning', cpu: 78, memory: 85, disk: 72, uptime: '30d 8h', location: 'Datacenter', lastSeen: '1 min ago', alerts: 3 },
+          { id: '3', hostname: 'server-app-01', ip: '10.0.10.12', type: 'server', os: 'Ubuntu 22.04', status: 'online', cpu: 55, memory: 70, disk: 48, uptime: '30d 8h', location: 'Datacenter', lastSeen: '5 min ago', alerts: 1 },
+          { id: '4', hostname: 'workstation-01', ip: '10.0.10.20', type: 'endpoint', os: 'Windows 11', status: 'online', cpu: 30, memory: 45, disk: 65, uptime: '5d 3h', location: 'Office', lastSeen: '10 min ago', alerts: 0 },
+          { id: '5', hostname: 'workstation-02', ip: '10.0.10.21', type: 'endpoint', os: 'Windows 11', status: 'offline', cpu: 0, memory: 0, disk: 0, uptime: '0d 0h', location: 'Office', lastSeen: '2 hours ago', alerts: 0 },
+          { id: '6', hostname: 'printer-hr', ip: '10.0.10.30', type: 'printer', os: 'HP LaserJet', status: 'online', cpu: 10, memory: 20, disk: 35, uptime: '15d 6h', location: 'HR Department', lastSeen: '5 min ago', alerts: 0 },
+          { id: '7', hostname: 'ap-floor1', ip: '10.0.10.40', type: 'ap', os: 'Ubiquiti', status: 'online', cpu: 20, memory: 35, disk: 15, uptime: '60d 2h', location: 'Floor 1', lastSeen: '1 min ago', alerts: 0 },
+          { id: '8', hostname: 'router-main', ip: '10.0.10.1', type: 'router', os: 'pfSense', status: 'online', cpu: 25, memory: 40, disk: 28, uptime: '90d 4h', location: 'Datacenter', lastSeen: '1 min ago', alerts: 0 },
+          { id: '9', hostname: 'switch-core', ip: '10.0.10.2', type: 'switch', os: 'Cisco IOS', status: 'online', cpu: 15, memory: 30, disk: 20, uptime: '120d 8h', location: 'Datacenter', lastSeen: '1 min ago', alerts: 0 },
+          { id: '10', hostname: 'firewall-ext', ip: '10.0.10.3', type: 'firewall', os: 'pfSense', status: 'warning', cpu: 65, memory: 75, disk: 45, uptime: '90d 4h', location: 'Datacenter', lastSeen: '1 min ago', alerts: 2 },
+        ];
         
         setDevices(mockDevices);
         setLoading(false);

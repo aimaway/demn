@@ -4,7 +4,6 @@ import {
   Mail, Shield, AlertTriangle, CheckCircle, XCircle, 
   Filter, Search, Clock, User, Server
 } from 'lucide-react';
-import { tryLiveFeed } from '../../hooks/useLiveFeed';
 
 interface EmailAlert {
   id: string;
@@ -32,9 +31,6 @@ export default function EmailSecurityPage() {
       try {
         await new Promise(resolve => setTimeout(resolve, 500));
         
-        // REAL DATA: same structure, fed by the service's open-source engine
-        const live = await tryLiveFeed('email-security');
-        if (live) { setAlerts(live as any); setLoading(false); return; }
         const mockAlerts: EmailAlert[] = [
           {
             id: 'EMAIL-001',

@@ -4,7 +4,6 @@ import {
   Shield, AlertTriangle, CheckCircle, XCircle, 
   Filter, Search, Clock, Server, Activity
 } from 'lucide-react';
-import { tryLiveFeed } from '../../hooks/useLiveFeed';
 
 interface EndpointAlert {
   id: string;
@@ -31,9 +30,6 @@ export default function EndpointProtectionPage() {
       try {
         await new Promise(resolve => setTimeout(resolve, 500));
         
-        // REAL DATA: same structure, fed by the service's open-source engine
-        const live = await tryLiveFeed('endpoint-protection');
-        if (live) { setAlerts(live as any); setLoading(false); return; }
         const mockAlerts: EndpointAlert[] = [
           {
             id: 'EDR-001',

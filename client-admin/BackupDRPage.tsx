@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Database, CheckCircle, AlertTriangle, Clock, HardDrive } from 'lucide-react';
-import { tryLiveFeed } from '../../hooks/useLiveFeed';
 
 interface BackupJob {
   id: string;
@@ -20,9 +19,6 @@ export default function BackupDRPage() {
   useEffect(() => {
     const fetchJobs = async () => {
       await new Promise(resolve => setTimeout(resolve, 500));
-      // REAL DATA: same structure, fed by the service's open-source engine
-      const live = await tryLiveFeed('backup-dr');
-      if (live) { setJobs(live as any); setLoading(false); return; }
       setJobs([
         { id: 'BACKUP-001', name: 'Daily Full Backup', device: 'server-db-01', type: 'full', status: 'completed', size: '2.4 TB', lastRun: '2027-01-15T02:00:00Z', nextRun: '2027-01-16T02:00:00Z' },
         { id: 'BACKUP-002', name: 'Hourly Incremental', device: 'server-web-01', type: 'incremental', status: 'running', size: '450 GB', nextRun: '2027-01-15T11:00:00Z' },

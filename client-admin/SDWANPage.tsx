@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Network, Activity, CheckCircle, AlertTriangle } from 'lucide-react';
-import { tryLiveFeed } from '../../hooks/useLiveFeed';
 
 interface SDWANAlert {
   id: string;
@@ -22,9 +21,6 @@ export default function SDWANPage() {
   useEffect(() => {
     const fetchAlerts = async () => {
       await new Promise(resolve => setTimeout(resolve, 500));
-      // REAL DATA: same structure, fed by the service's open-source engine
-      const live = await tryLiveFeed('sd-wan');
-      if (live) { setAlerts(live as any); setLoading(false); return; }
       setAlerts([
         { id: 'SDWAN-001', type: 'link-down', severity: 'critical', site: 'Branch-Office-NYC', link: 'Primary ISP', status: 'active', timestamp: '2027-01-15T09:30:00Z', ticketCreated: true },
         { id: 'SDWAN-002', type: 'performance', severity: 'high', site: 'Branch-Office-LA', link: 'Secondary ISP', status: 'investigating', timestamp: '2027-01-15T08:45:00Z', ticketCreated: false },

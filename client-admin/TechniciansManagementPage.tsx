@@ -37,27 +37,82 @@ export default function TechniciansManagementPage() {
       try {
         await new Promise(resolve => setTimeout(resolve, 500));
         
-        // Same people as the ticketing engine assignees (demoWorld) => tickets
-        // assigned to "Y. El Amrani" here match Technicians list and vice versa.
-        const { demoTechnicians, demoTicketSeeds } = await import('../../data/demoWorld');
-        const gradeFor = (role: string) => role === 'client_admin' ? 'Admin' : role === 'analyst' ? 'L3' : role === 'technician' ? 'L2' : 'L1';
-        const roleLabel = (g: string) => g === 'Admin' ? 'Security Administrator' : g === 'L3' ? 'Expert Technician' : g === 'L2' ? 'Senior Technician' : 'Junior Technician';
-        const mockTechnicians: Technician[] = demoTechnicians.filter(t => t.role !== 'client_admin').map((t, i) => {
-          const g = gradeFor(t.role);
-          const [firstName, ...rest] = t.name.replace(/^([A-Z]\w*)\.\s/, '$1 ').split(' ');
-          const myTickets = demoTicketSeeds.filter(tk => tk.assignee === t.name);
-          return {
-            id: String(i + 1),
-            firstName: firstName.trim(), lastName: rest.join(' ') || '—',
-            email: t.email, phone: `+212 5 ${String(40 + i)} ${String(20 + i * 3)} ${String(11 + i * 7)} ${String(30 + i * 9)}`,
-            grade: g, role: roleLabel(g), status: 'active',
-            permissions: g === 'Admin' ? ['all'] : ['view-alerts', 'edit-alerts', 'view-tickets', 'edit-tickets', 'create-tickets'],
+        const mockTechnicians: Technician[] = [
+          {
+            id: '1',
+            firstName: 'Alex',
+            lastName: 'Rivera',
+            email: 'alex.r@infracentracorp.io',
+            phone: '+1 (555) 123-4567',
+            grade: 'L1',
+            role: 'Junior Technician',
+            status: 'active',
+            permissions: ['view-alerts', 'view-tickets', 'edit-tickets'],
             mfaEnabled: true,
-            lastLogin: new Date(Date.now() - (i + 1) * 3_600_000).toISOString(),
+            lastLogin: '2027-01-15T08:30:00Z',
             createdAt: '2026-06-15T00:00:00Z',
-            assignedServices: myTickets.length ? ['threat-intel', 'endpoint-protection', 'ticketing'] : ['threat-intel'],
-          };
-        });
+            assignedServices: ['threat-intel', 'endpoint-protection'],
+          },
+          {
+            id: '2',
+            firstName: 'Marcus',
+            lastName: 'Johnson',
+            email: 'marcus.j@infracentracorp.io',
+            phone: '+1 (555) 234-5678',
+            grade: 'L2',
+            role: 'Senior Technician',
+            status: 'active',
+            permissions: ['view-alerts', 'edit-alerts', 'view-tickets', 'edit-tickets', 'create-tickets'],
+            mfaEnabled: true,
+            lastLogin: '2027-01-15T09:15:00Z',
+            createdAt: '2026-06-20T00:00:00Z',
+            assignedServices: ['threat-intel', 'endpoint-protection', 'network-monitoring', 'compliance'],
+          },
+          {
+            id: '3',
+            firstName: 'Sarah',
+            lastName: 'Chen',
+            email: 'sarah.chen@infracentracorp.io',
+            phone: '+1 (555) 345-6789',
+            grade: 'Admin',
+            role: 'Security Administrator',
+            status: 'active',
+            permissions: ['all'],
+            mfaEnabled: true,
+            lastLogin: '2027-01-15T09:20:00Z',
+            createdAt: '2026-06-15T00:00:00Z',
+            assignedServices: ['all'],
+          },
+          {
+            id: '4',
+            firstName: 'Jordan',
+            lastName: 'Kim',
+            email: 'jordan.k@infracentracorp.io',
+            phone: '+1 (555) 456-7890',
+            grade: 'L1',
+            role: 'Junior Technician',
+            status: 'pending',
+            permissions: ['view-alerts', 'view-tickets'],
+            mfaEnabled: false,
+            createdAt: '2027-01-14T00:00:00Z',
+            assignedServices: ['threat-intel'],
+          },
+          {
+            id: '5',
+            firstName: 'Sam',
+            lastName: 'Ortiz',
+            email: 'sam.o@infracentracorp.io',
+            phone: '+1 (555) 567-8901',
+            grade: 'L3',
+            role: 'Expert Technician',
+            status: 'inactive',
+            permissions: ['view-alerts', 'edit-alerts', 'view-tickets', 'edit-tickets', 'create-tickets', 'escalate-tickets'],
+            mfaEnabled: true,
+            lastLogin: '2027-01-10T14:30:00Z',
+            createdAt: '2026-09-22T00:00:00Z',
+            assignedServices: ['threat-intel', 'endpoint-protection', 'network-monitoring', 'incident-response'],
+          },
+        ];
         
         setTechnicians(mockTechnicians);
         setLoading(false);

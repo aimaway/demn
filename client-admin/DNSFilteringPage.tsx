@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Globe, Shield, AlertTriangle, CheckCircle } from 'lucide-react';
-import { tryLiveFeed } from '../../hooks/useLiveFeed';
 
 interface DNSRule {
   id: string;
@@ -18,9 +17,6 @@ export default function DNSFilteringPage() {
   useEffect(() => {
     const fetchRules = async () => {
       await new Promise(resolve => setTimeout(resolve, 500));
-      // REAL DATA: same structure, fed by the service's open-source engine
-      const live = await tryLiveFeed('dns-filtering');
-      if (live) { setRules(live as any); setLoading(false); return; }
       setRules([
         { id: 'DNS-001', domain: '*.malware-site.com', category: 'Malware', action: 'block', hits: 1247, lastHit: '2027-01-15T09:30:00Z' },
         { id: 'DNS-002', domain: 'phishing-bank.com', category: 'Phishing', action: 'block', hits: 89, lastHit: '2027-01-15T08:15:00Z' },

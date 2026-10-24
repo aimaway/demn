@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Lock, Shield, AlertTriangle, CheckCircle } from 'lucide-react';
-import { tryLiveFeed } from '../../hooks/useLiveFeed';
 
 interface FirewallRule {
   id: string;
@@ -20,9 +19,6 @@ export default function FirewallManagementPage() {
   useEffect(() => {
     const fetchRules = async () => {
       await new Promise(resolve => setTimeout(resolve, 500));
-      // REAL DATA: same structure, fed by the service's open-source engine
-      const live = await tryLiveFeed('firewall-mgmt');
-      if (live) { setRules(live as any); setLoading(false); return; }
       setRules([
         { id: 'FW-001', name: 'Allow HTTP/HTTPS', source: 'Any', destination: 'Web Servers', port: '80,443', action: 'allow', hits: 125678, status: 'active' },
         { id: 'FW-002', name: 'Block Malicious IPs', source: 'Threat List', destination: 'Any', port: 'Any', action: 'deny', hits: 4523, status: 'active' },

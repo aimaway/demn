@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Wifi, Users, CheckCircle, XCircle, Clock } from 'lucide-react';
-import { tryLiveFeed } from '../../hooks/useLiveFeed';
 
 interface VPNConnection {
   id: string;
@@ -21,9 +20,6 @@ export default function VPNGatewayPage() {
   useEffect(() => {
     const fetchConnections = async () => {
       await new Promise(resolve => setTimeout(resolve, 500));
-      // REAL DATA: same structure, fed by the service's open-source engine
-      const live = await tryLiveFeed('vpn-gateway');
-      if (live) { setConnections(live as any); setLoading(false); return; }
       setConnections([
         { id: 'VPN-001', user: 'John Doe', device: 'Laptop-JohnDoe', ip: '10.0.10.20', location: 'New York, USA', status: 'connected', connectedAt: '2027-01-15T08:30:00Z', duration: '1h 15m', bandwidth: '2.4 Mbps' },
         { id: 'VPN-002', user: 'Jane Smith', device: 'Mobile-JaneSmith', ip: '10.0.10.21', location: 'London, UK', status: 'connected', connectedAt: '2027-01-15T09:00:00Z', duration: '45m', bandwidth: '1.8 Mbps' },

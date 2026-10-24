@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Wrench, CheckCircle, AlertTriangle, Clock } from 'lucide-react';
-import { tryLiveFeed } from '../../hooks/useLiveFeed';
 
 interface Patch {
   id: string;
@@ -19,9 +18,6 @@ export default function PatchManagementPage() {
   useEffect(() => {
     const fetchPatches = async () => {
       await new Promise(resolve => setTimeout(resolve, 500));
-      // REAL DATA: same structure, fed by the service's open-source engine
-      const live = await tryLiveFeed('patch-management');
-      if (live) { setPatches(live as any); setLoading(false); return; }
       setPatches([
         { id: 'PATCH-001', name: 'Windows Security Update KB5034441', device: 'workstation-01', severity: 'critical', status: 'installed', releasedAt: '2027-01-10T00:00:00Z', installedAt: '2027-01-12T14:30:00Z' },
         { id: 'PATCH-002', name: 'Ubuntu Security Patch USN-6543-1', device: 'server-web-01', severity: 'high', status: 'available', releasedAt: '2027-01-14T00:00:00Z' },
