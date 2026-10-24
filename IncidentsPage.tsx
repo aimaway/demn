@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { AlertTriangle, Clock, User, Server, Hash, ChevronDown, ChevronRight, CheckCircle2, Shield, Zap, ArrowRight } from 'lucide-react';
+import { AlertTriangle, Clock, User, Server, Hash, ChevronDown, ChevronRight, CheckCircle2, Shield, Zap, ArrowRight, RefreshCw } from 'lucide-react';
 import { mockIncidents } from '../data/mockData';
 import ServiceGate from '../components/ServiceGate';
+import { useServiceLiveFeed, feedBadgeText } from '../hooks/useServiceLiveFeed';
 
 const severityConfig: Record<string, { bg: string; text: string; border: string }> = {
   critical: { bg: 'bg-red-500/10', text: 'text-red-400', border: 'border-red-500/20' },
@@ -21,16 +22,34 @@ const statusConfig: Record<string, { icon: any; color: string; label: string }> 
 
 function IncidentsContent() {
   const [expandedId, setExpandedId] = useState<string | null>('inc-001');
+  // Real-data wiring: TheHive cases when Demo Mode is OFF; mock fallback ON.
+  const feed = useServiceLiveFeed<any>('incident-response', mockIncidents as any[]);
+  const incidents: any[] = feed.rows;
 
   return (
     <div className="p-4 lg:p-6 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-white">Incident Response</h1>
-        <p className="text-slate-500 text-sm mt-1">Active incident tracking and automated playbook execution</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Incident Response</h1>
+          <p className="text-slate-500 text-sm mt-1">Active incident tracking and automated playbook execution</p>
+          <p
+            className={`text-xs mt-2 ${feed.status === 'live' ? 'text-emerald-400' : feed.status === 'error' ? 'text-amber-400' : 'text-cyan-400'}`}
+            title={feed.detail}
+          >
+            {feedBadgeText(feed.status, incidents.length, feed.detail)}
+          </p>
+        </div>
+        <button
+          onClick={feed.reload}
+          className="flex items-center gap-2 text-xs text-slate-400 hover:text-white border border-slate-700 rounded-lg px-3 py-2"
+          title="Re-pull from the live engine"
+        >
+          <RefreshCw size={14} /> Refresh
+        </button>
       </div>
 
       <div className="space-y-4">
-        {mockIncidents.map(incident => {
+        {incidents.map(incident => {
           const isExpanded = expandedId === incident.id;
           const sevConfig = severityConfig[incident.severity];
           const statConfig = statusConfig[incident.status];

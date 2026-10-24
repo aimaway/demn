@@ -1,14 +1,14 @@
 import React from 'react';
-import Navigation from '../components/landing/Navigation';
-import HeroSection from '../components/landing/HeroSection';
-import PlatformPillars from '../components/landing/PlatformPillars';
-import ServicesGrid from '../components/landing/ServicesGrid';
-import ClientsSection from '../components/landing/ClientsSection';
-import PartnersSection from '../components/landing/PartnersSection';
-import MSSPSection from '../components/landing/MSSPSection';
-import PricingSection from '../components/landing/PricingSection';
-import AcademySection from '../components/landing/AcademySection';
-import Footer from '../components/landing/Footer';
+import Navigation from './landing/Navigation';
+import HeroSection from './landing/HeroSection';
+import PlatformPillars from './landing/PlatformPillars';
+import ServicesGrid from './landing/ServicesGrid';
+import ClientsSection from './landing/ClientsSection';
+import PartnersSection from './landing/PartnersSection';
+import MSSPSection from './landing/MSSPSection';
+import PricingSection from './landing/PricingSection';
+import AcademySection from './landing/AcademySection';
+import Footer from './landing/Footer';
 
 export default function LandingPage() {
   return (

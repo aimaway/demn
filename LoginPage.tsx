@@ -1,15 +1,21 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { Shield, Zap, Eye, EyeOff, Loader2, Lock, Mail, ArrowRight, Building2, Users, Crown } from 'lucide-react';
+import { useAuth, DEMO_ACCOUNTS, isDemoMode, setDemoMode } from '../context/AuthContext';
+import { Shield, Zap, Eye, EyeOff, Loader2, Lock, Mail, ArrowRight, Building2, Users, Crown, Rocket, Briefcase, Ticket, UserCog } from 'lucide-react';
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { login, loginAsDemo, isLoading, user } = useAuth();
+  const { login, loginAsDemo, isLoading, user, authError } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState<'demo' | 'login'>('demo');
+  const [demoMode, setDemoModeState] = useState(() => isDemoMode());
+
+  const toggleDemoMode = (on: boolean) => {
+    setDemoModeState(on);
+    setDemoMode(on); // single source of truth shared with AuthContext / entitlements
+  };
 
   const handleDemoLogin = async (key: string) => {
     const loggedInUser = await loginAsDemo(key);
@@ -18,6 +24,8 @@ export default function LoginPage() {
     // Redirect based on role immediately
     if (loggedInUser.role === 'platform_admin') {
       navigate('/admin/dashboard');
+    } else if (loggedInUser.role === 'partner_admin') {
+      navigate('/partner/dashboard');
     } else if (loggedInUser.role === 'client_admin') {
       navigate('/client-admin/dashboard');
     } else {
@@ -33,6 +41,8 @@ export default function LoginPage() {
     // Redirect based on role immediately
     if (loggedInUser.role === 'platform_admin') {
       navigate('/admin/dashboard');
+    } else if (loggedInUser.role === 'partner_admin') {
+      navigate('/partner/dashboard');
     } else if (loggedInUser.role === 'client_admin') {
       navigate('/client-admin/dashboard');
     } else {
@@ -88,7 +98,41 @@ export default function LoginPage() {
           {activeTab === 'demo' ? (
             <>
               <h2 className="text-xl font-semibold text-white mb-1">Try the Platform</h2>
-              <p className="text-slate-500 text-sm mb-6">Select a role to explore Infracentra</p>
+              <p className="text-slate-500 text-sm mb-4">Select a role to explore Infracentra</p>
+
+              {/* Demo Mode selector: choose what to log into — simulated demo or real backend */}
+              <div className={`rounded-xl border p-3 mb-4 ${demoMode ? 'bg-cyan-500/5 border-cyan-500/30' : 'bg-emerald-500/5 border-emerald-500/30'}`}>
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
+                      {demoMode ? <Rocket className="w-3.5 h-3.5 text-cyan-400" /> : <Shield className="w-3.5 h-3.5 text-emerald-400" />}
+                      {demoMode ? 'DEMO MODE — Simulated environment' : 'REAL BACKEND — Live API data'}
+                    </p>
+                    <p className="text-[10px] text-slate-500 mt-1 leading-relaxed">
+                      {demoMode
+                        ? 'Instant access to ALL 16 services + Advanced Ticketing (Pro & Enterprise feature). No backend needed, nothing is stored on servers.'
+                        : 'Demo accounts authenticate against the live FastAPI backend with real entitlements and audit logging.'}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={demoMode}
+                    onClick={() => toggleDemoMode(!demoMode)}
+                    className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${demoMode ? 'bg-cyan-500' : 'bg-emerald-500'}`}
+                  >
+                    <span
+                      className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform ${demoMode ? 'translate-x-5' : ''}`}
+                    />
+                  </button>
+                </div>
+                {demoMode && (
+                  <div className="mt-2 pt-2 border-t border-cyan-500/10 flex items-center gap-1.5 text-[10px] text-cyan-300">
+                    <Ticket className="w-3 h-3" />
+                    Demo tenants include all 16 services + Advanced Ticketing unlocked
+                  </div>
+                )}
+              </div>
 
               <div className="space-y-3">
                 {/* Platform Admin */}
@@ -103,13 +147,13 @@ export default function LoginPage() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-white">Platform Admin</p>
-                      <p className="text-[10px] text-slate-500">ops@infracentra.io</p>
+                      <p className="text-[10px] text-slate-500">{DEMO_ACCOUNTS['platform-admin'].email}</p>
                     </div>
                   </div>
                   <ArrowRight className="w-4 h-4 text-slate-600 group-hover:text-purple-400 transition-colors" />
                 </button>
 
-                {/* Client Admin */}
+                {/* Client Admin — Enterprise (all 16 services + Advanced Ticketing) */}
                 <button
                   onClick={() => handleDemoLogin('client-admin-enterprise')}
                   disabled={isLoading}
@@ -121,10 +165,28 @@ export default function LoginPage() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-white">Client Admin (Enterprise)</p>
-                      <p className="text-[10px] text-slate-500">sarah.chen@infracentracorp.io</p>
+                      <p className="text-[10px] text-slate-500">{DEMO_ACCOUNTS['client-admin-enterprise'].email} · all 16 services + ticketing</p>
                     </div>
                   </div>
                   <ArrowRight className="w-4 h-4 text-slate-600 group-hover:text-cyan-400 transition-colors" />
+                </button>
+
+                {/* Client Admin — Pro (all 16 services + Advanced Ticketing included in Pro plan) */}
+                <button
+                  onClick={() => handleDemoLogin('client-admin-pro')}
+                  disabled={isLoading}
+                  className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-blue-500/5 border border-blue-500/20 hover:border-blue-500/40 hover:bg-blue-500/10 transition-all text-left group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                      <Briefcase className="w-5 h-5 text-blue-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-white">Client Admin (Pro)</p>
+                      <p className="text-[10px] text-slate-500">{DEMO_ACCOUNTS['client-admin-pro'].email} · Pro plan + Advanced Ticketing</p>
+                    </div>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-slate-600 group-hover:text-blue-400 transition-colors" />
                 </button>
 
                 {/* Client User */}
@@ -139,12 +201,36 @@ export default function LoginPage() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-white">Client User</p>
-                      <p className="text-[10px] text-slate-500">marcus.j@infracentracorp.io</p>
+                      <p className="text-[10px] text-slate-500">{DEMO_ACCOUNTS['client-user'].email}</p>
                     </div>
                   </div>
                   <ArrowRight className="w-4 h-4 text-slate-600 group-hover:text-green-400 transition-colors" />
                 </button>
+
+                {/* Partner Admin — MSP white-label portal */}
+                <button
+                  onClick={() => handleDemoLogin('partner-admin')}
+                  disabled={isLoading}
+                  className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-amber-500/5 border border-amber-500/20 hover:border-amber-500/40 hover:bg-amber-500/10 transition-all text-left group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                      <UserCog className="w-5 h-5 text-amber-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-white">Partner Admin (MSP)</p>
+                      <p className="text-[10px] text-slate-500">{DEMO_ACCOUNTS['partner-admin'].email} · portail white-label AtlasSOC</p>
+                    </div>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-slate-600 group-hover:text-amber-400 transition-colors" />
+                </button>
               </div>
+
+              {authError && (
+                <div className="mt-4 rounded-lg bg-red-500/10 border border-red-500/30 px-3 py-2 text-xs text-red-300">
+                  {authError}
+                </div>
+              )}
 
               <div className="mt-6 pt-6 border-t border-slate-800">
                 <p className="text-xs text-slate-500 text-center">
@@ -208,6 +294,35 @@ export default function LoginPage() {
                     'Sign In'
                   )}
                 </button>
+
+                {authError && (
+                  <div className="rounded-lg bg-red-500/10 border border-red-500/30 px-3 py-2 text-xs text-red-300">
+                    {authError}
+                  </div>
+                )}
+
+                {/* Demo Mode selector — choose simulated demo vs real backend */}
+                <div className={`flex items-center justify-between rounded-lg border px-3 py-2.5 ${demoMode ? 'bg-cyan-500/5 border-cyan-500/30' : 'bg-emerald-500/5 border-emerald-500/30'}`}>
+                  <div>
+                    <p className="text-xs font-medium text-slate-300">Demo Mode {demoMode ? '(ON)' : '(OFF)'}</p>
+                    <p className="text-[10px] text-slate-500">
+                      {demoMode
+                        ? 'Simulated environment — all 16 services + Advanced Ticketing unlocked, no backend calls'
+                        : 'Production mode — 100% real backend: live data, entitlements & audit trail'}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={demoMode}
+                    onClick={() => toggleDemoMode(!demoMode)}
+                    className={`relative w-11 h-6 rounded-full transition-colors ${demoMode ? 'bg-cyan-500' : 'bg-emerald-500'}`}
+                  >
+                    <span
+                      className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform ${demoMode ? 'translate-x-5' : ''}`}
+                    />
+                  </button>
+                </div>
               </form>
 
               <div className="mt-6 pt-6 border-t border-slate-800">

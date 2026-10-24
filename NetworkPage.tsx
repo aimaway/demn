@@ -3,6 +3,7 @@ import { Network, Wifi, WifiOff, Activity } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { mockNetworkDevices } from '../data/mockData';
 import ServiceGate from '../components/ServiceGate';
+import { useServiceLiveFeed, feedBadgeText } from '../hooks/useServiceLiveFeed';
 
 const throughputData = [
   { time: '00:00', mbps: 420 }, { time: '04:00', mbps: 380 }, { time: '08:00', mbps: 890 },
@@ -10,9 +11,12 @@ const throughputData = [
 ];
 
 function NetworkContent() {
-  const online = mockNetworkDevices.filter(d => d.status === 'online').length;
-  const degraded = mockNetworkDevices.filter(d => d.status === 'degraded').length;
-  const offline = mockNetworkDevices.filter(d => d.status === 'offline').length;
+  // Real-data wiring: Netdata/LibreNMS devices when Demo Mode is OFF.
+  const feed = useServiceLiveFeed<any>('network-monitoring', mockNetworkDevices as any[]);
+  const devices: any[] = feed.rows;
+  const online = devices.filter(d => d.status === 'online').length;
+  const degraded = devices.filter(d => d.status === 'degraded').length;
+  const offline = devices.filter(d => d.status === 'offline').length;
 
   return (
     <div className="p-4 lg:p-6 space-y-6">
@@ -21,12 +25,15 @@ function NetworkContent() {
           <Network className="w-7 h-7 text-purple-400" /> Network Monitoring
         </h1>
         <p className="text-slate-500 text-sm mt-1">Real-time network device status and throughput</p>
+        <p className={`text-xs mt-2 ${feed.status === 'live' ? 'text-emerald-400' : feed.status === 'error' ? 'text-amber-400' : 'text-cyan-400'}`} title={feed.detail}>
+          {feedBadgeText(feed.status, devices.length, feed.detail)}
+        </p>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4">
           <p className="text-xs text-slate-500">Total Devices</p>
-          <p className="text-2xl font-bold text-white mt-1">{mockNetworkDevices.length}</p>
+          <p className="text-2xl font-bold text-white mt-1">{devices.length}</p>
         </div>
         <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4">
           <p className="text-xs text-slate-500">Online</p>
@@ -70,7 +77,7 @@ function NetworkContent() {
             </tr>
           </thead>
           <tbody>
-            {mockNetworkDevices.map(d => (
+            {devices.map(d => (
               <tr key={d.id} className="border-b border-slate-800/50 hover:bg-slate-800/30">
                 <td className="px-4 py-3 text-sm text-slate-200 font-mono">{d.hostname}</td>
                 <td className="px-4 py-3 text-xs text-slate-400 capitalize">{d.type}</td>

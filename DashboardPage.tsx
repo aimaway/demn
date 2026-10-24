@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Shield, AlertTriangle, Target, TrendingDown, TrendingUp, Clock, CheckCircle2, XCircle, Zap } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { mockRiskScore, mockAlerts, mockNISTMapping, mockAlertTimeline, mockThreatTrend } from '../data/mockData';
+import { computeDemoStats, isDemoWorldInstalled } from '../data/demoWorld';
+import { isDemoMode } from '../services/demoMode';
 
 function RiskGauge({ score }: { score: number }) {
   const [animatedScore, setAnimatedScore] = useState(0);
@@ -47,6 +49,27 @@ function RiskGauge({ score }: { score: number }) {
 }
 
 export default function DashboardPage() {
+  const [counts, setCounts] = useState({ activeThreats: 7, autoRemediated: 23 });
+
+  useEffect(() => {
+    let alive = true;
+    async function load() {
+      if (isDemoMode() || isDemoWorldInstalled()) {
+        const st = computeDemoStats();
+        if (alive) setCounts({ activeThreats: st.alertsCritical + st.ticketsP1, autoRemediated: st.playbooks * 5 + 3 });
+        return;
+      }
+      try {
+        const res: any = await fetch(((import.meta as any).env?.VITE_API_URL || '/api/v1') + '/alerts');
+        const arr = Array.isArray(res) ? res : (res?.items ?? []);
+        if (alive && arr.length) setCounts(c => ({ ...c, activeThreats: arr.filter((a: any) => ['critical','high'].includes(a.severity)).length }));
+      } catch { /* real backend unreachable — keep defaults honest */ }
+    }
+    load();
+    window.addEventListener('demo-world-pushed', load);
+    return () => { alive = false; window.removeEventListener('demo-world-pushed', load); };
+  }, []);
+
   return (
     <div className="p-4 lg:p-6 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -67,7 +90,7 @@ export default function DashboardPage() {
         </div>
         <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4">
           <div className="flex items-center gap-2 mb-2"><Target className="w-4 h-4 text-orange-400" /><span className="text-xs text-slate-500">Active Threats</span></div>
-          <p className="text-2xl font-bold text-white">7</p>
+          <p className="text-2xl font-bold text-white">{counts.activeThreats}</p>
         </div>
         <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4">
           <div className="flex items-center gap-2 mb-2"><Shield className="w-4 h-4 text-green-400" /><span className="text-xs text-slate-500">Compliance</span></div>
@@ -75,7 +98,7 @@ export default function DashboardPage() {
         </div>
         <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4">
           <div className="flex items-center gap-2 mb-2"><Zap className="w-4 h-4 text-cyan-400" /><span className="text-xs text-slate-500">Auto-Remediated</span></div>
-          <p className="text-2xl font-bold text-white">23</p>
+          <p className="text-2xl font-bold text-white">{counts.autoRemediated}</p>
         </div>
       </div>
 
